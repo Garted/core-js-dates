@@ -207,12 +207,14 @@ function getNextFridayThe13th(date) {
   const resultDate = new Date(date);
   resultDate.setDate(resultDate.getDate() + 1);
 
-  while (true) {
+  for (let i = 0; i < 1095; i += 1) {
     if (resultDate.getDate() === 13 && resultDate.getDay() === 5) {
       return resultDate;
     }
     resultDate.setDate(resultDate.getDate() + 1);
   }
+
+  throw new Error('Friday the 13th not found – impossible');
 }
 
 /**
