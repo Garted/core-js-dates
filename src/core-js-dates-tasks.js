@@ -61,8 +61,15 @@ function getDayName(date) {
  * Date('2024-02-13T00:00:00Z') => Date('2024-02-16T00:00:00Z')
  * Date('2024-02-16T00:00:00Z') => Date('2024-02-23T00:00:00Z')
  */
-function getNextFriday(/* date */) {
-  throw new Error('Not implemented');
+function getNextFriday(date) {
+  const d = new Date(date);
+
+  const day = d.getDay();
+
+  const diff = day === 5 ? 7 : (5 - day + 7) % 7;
+
+  d.setDate(d.getDate() + diff);
+  return d;
 }
 
 /**
@@ -261,8 +268,39 @@ function getQuarter(date) {
  * { start: '01-01-2024', end: '15-01-2024' }, 1, 3 => ['01-01-2024', '05-01-2024', '09-01-2024', '13-01-2024']
  * { start: '01-01-2024', end: '10-01-2024' }, 1, 1 => ['01-01-2024', '03-01-2024', '05-01-2024', '07-01-2024', '09-01-2024']
  */
-function getWorkSchedule(/* period, countWorkDays, countOffDays */) {
-  throw new Error('Not implemented');
+function getWorkSchedule(period, countWorkDays, countOffDays) {
+  const parse = (str) => {
+    const [dd, mm, yyyy] = str.split('-').map(Number);
+    return new Date(yyyy, mm - 1, dd);
+  };
+
+  const format = (date) => {
+    const dd = String(date.getDate()).padStart(2, '0');
+    const mm = String(date.getMonth() + 1).padStart(2, '0');
+    const yyyy = date.getFullYear();
+    return `${dd}-${mm}-${yyyy}`;
+  };
+
+  const start = parse(period.start);
+  const end = parse(period.end);
+
+  const result = [];
+  const current = new Date(start);
+
+  while (current <= end) {
+    for (let i = 0; i < countWorkDays; i += 1) {
+      const workDay = new Date(current);
+      workDay.setDate(workDay.getDate() + i);
+
+      if (workDay > end) break;
+
+      result.push(format(workDay));
+    }
+
+    current.setDate(current.getDate() + countWorkDays + countOffDays);
+  }
+
+  return result;
 }
 
 /**
